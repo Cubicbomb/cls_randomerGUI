@@ -43,12 +43,13 @@ def rnd():
                 if a in rdlist:
                     continue
                 else:
-                    print(a)
+                    #print(a)
                     reslt.insert(tk.CURRENT, str(a) + ',')#插入文字
                     rdlist.append(a)
                     i = i + 1
-            print(rdlist)
-            #准备接入展示函数shw()
+            #print(rdlist)
+            print("本次抽取完毕,点按“展示”逐一高亮展示抽取结果")
+            #准备接入展示函数shw()初始化
             xu = 0
             reslt.mark_set(tk.INSERT,'1.0')
             shw()# 接入展示结果
@@ -74,62 +75,61 @@ def rnd():
         reslt.insert('end', "请点击“展示”按钮", "\n")
         reslt.insert(tk.INSERT, "\n")
 
-# 定义展示结果的函数
+
 def shw():
-    # 获取当前模式
     _mod = mod.get()
-    global xu,pre_s
-    # 根据模式选择操作
+    global xu, pre_s
+
+    if not isinstance(rdlist, list) or not rdlist:
+        return
+
     if _mod == 0:
-        # 如果序列已经完成
         if xu >= len(rdlist):
-            reslt.tag_delete("precheckment")
+            #reslt.tag_delete("precheckment")
             reslt.tag_delete("nowcheckment")
             mesg.set("完成")
             jiwei.set("完成")
             xu = 0
-        else:
-            # 标签格式定义
-            reslt.tag_config("precheckment", background=reslt.cget('background'), foreground="blue", underline=0)  # 前项格式定义
-            reslt.tag_config("nowcheckment", background="yellow", foreground="red", underline=1)  # 新项格式定义
+            reslt.mark_set(tk.INSERT, "1.0")
+            return
 
-            s = rdlist[xu]  # s 为当前序列项
+        #reslt.tag_config("precheckment", background=reslt.cget('background'), foreground="blue", underline=0)
+        reslt.tag_config("nowcheckment", background="yellow", foreground="red", underline=1)
 
-            # 根据序列位置，更新显示
-            current_index = reslt.index(tk.INSERT)  # 获取当前光标位置
+        s = rdlist[xu]
+        s_str = str(s)
+        length = len(s_str) + 1
 
-            # 更新前项标签
-            if xu != 0:
-                prev_index = f"{current_index}-{len(str(pre_s))-1}c"
-                reslt.tag_add("precheckment", prev_index, current_index)  # 前项更新
+        current_index = reslt.index(tk.INSERT)
 
-            # 添加新项标签
-            reslt.tag_add("nowcheckment", current_index, f"{current_index}+{len(str(s))+1}c")  # 新项添加
+        #if xu != 0:
+            #prev_index = f"{current_index}-{(len(str(pre_s)) + 1)}c"
+            #reslt.tag_add("precheckment", prev_index, current_index)
 
-            # 更新光标位置
-            reslt.mark_set(tk.INSERT, f"{current_index}+{len(str(s))+1}c")  # 将光标向右移动到新项的末尾
+        reslt.tag_add("nowcheckment", current_index, f"{current_index}+{length}c")
+        reslt.mark_set(tk.INSERT, f"{current_index}+{length}c")
+        reslt.see(tk.INSERT)
 
-            # 确保光标位置可见
-            reslt.see(tk.INSERT)
+        mesg.set(s_str)
+        jiwei.set(s_str)
+        pre_s = s
+        xu += 1
 
-            # 更新消息和计数状态
-            mesg.set(str(s))
-            jiwei.set(str(s))
-            pre_s = s
-            xu += 1
     elif _mod == 1:
         if xu >= len(rdlist):
             mesg.set("完成")
             jiwei.set("完成")
             xu = 0
-        # 获取当前序列项
+            return
+
         s = rdlist[xu]
-        # 打印并更新结果显示
-        print(s)
-        reslt.insert('end', str(s) + ',')
-        mesg.set(str(s))
-        jiwei.set(str(s))
-        xu = xu + 1
+        s_str = str(s)
+
+        reslt.insert('end', s_str + ',')
+        mesg.set(s_str)
+        jiwei.set(s_str)
+        xu += 1
+
 
 # 创建Tkinter控件
 chou = tk.Text(win)
