@@ -77,14 +77,23 @@ def rnd():
 
 
 def shw():
+    """
+    此函数用于展示抽号结果，
+    它根据不同的模式对抽号结果列表中的元素进行高亮标记和在大字显示。
+    """
+    # 获取当前模式
     _mod = mod.get()
     global xu, pre_s
 
+    # 检查rdlist是否是一个非空列表
     if not isinstance(rdlist, list) or not rdlist:
         return
 
+    # 当模式为0时，执行特定的处理逻辑
     if _mod == 0:
+        # 如果xu的值大于等于rdlist的长度，说明处理已完成
         if xu >= len(rdlist):
+            # 删除文本框中的标记和显示信息
             #reslt.tag_delete("precheckment")
             reslt.tag_delete("nowcheckment")
             mesg.set("完成")
@@ -93,38 +102,48 @@ def shw():
             reslt.mark_set(tk.INSERT, "1.0")
             return
 
+        # 配置文本框中的标记样式
         #reslt.tag_config("precheckment", background=reslt.cget('background'), foreground="blue", underline=0)
         reslt.tag_config("nowcheckment", background="yellow", foreground="red", underline=1)
 
+        # 获取当前要处理的元素及其字符串表示形式
         s = rdlist[xu]
         s_str = str(s)
         length = len(s_str) + 1
 
+        # 获取当前文本框中的插入点位置
         current_index = reslt.index(tk.INSERT)
 
+        # 如果不是第一个元素，为前一个元素添加标记
         #if xu != 0:
             #prev_index = f"{current_index}-{(len(str(pre_s)) + 1)}c"
             #reslt.tag_add("precheckment", prev_index, current_index)
 
+        # 为当前元素添加标记，并更新文本框中的插入点位置
         reslt.tag_add("nowcheckment", current_index, f"{current_index}+{length}c")
         reslt.mark_set(tk.INSERT, f"{current_index}+{length}c")
         reslt.see(tk.INSERT)
 
+        # 更新显示的信息
         mesg.set(s_str)
         jiwei.set(s_str)
         pre_s = s
         xu += 1
 
+    # 当模式为1时，执行另一套处理逻辑
     elif _mod == 1:
+        # 如果xu的值大于等于rdlist的长度，说明处理已完成
         if xu >= len(rdlist):
             mesg.set("完成")
             jiwei.set("完成")
             xu = 0
             return
 
+        # 获取当前要处理的元素及其字符串表示形式
         s = rdlist[xu]
         s_str = str(s)
 
+        # 在文本框末尾插入当前元素的字符串表示形式
         reslt.insert('end', s_str + ',')
         mesg.set(s_str)
         jiwei.set(s_str)
